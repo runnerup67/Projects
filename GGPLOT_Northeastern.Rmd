@@ -1,0 +1,132 @@
+---
+title: "Assignment 3 Statistical Correlation and GGPLOT"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Enter your name here: Azar Najafli
+
+
+
+For this assignment, we will use the widely famous IRIS dataset which is included in every R installation (you automatically have it when you first start RStudio. Just type "iris" and run it to see)
+
+Numerous guides have been written on the exploration of this widely known dataset. Iris was introduced by Ronald Fisher in his 1936 paper The use of multiple measurements in taxonomic problems, contains three plant species (setosa, virginica, versicolor) and four features measured for each sample. These quantify the morphologic variation of the iris flower in its three species, all measurements given in centimeters.
+
+
+
+**Step 1- Load the relevant libraries**
+
+```{r step1, echo=TRUE}
+library(ggplot2)
+library(DataExplorer)
+
+```
+
+**Step 2 - Create a correlation matrix of the Iris dataset using the DataExplorer correlation function we used in class in lab 3. Include only continuous variables in your correlation plot to avoid confusion as factor variables don't make sense in a correlation plot (10 points)**
+
+```{r step2, echo=TRUE}
+A <- iris
+#B is continuous variables 
+
+B<- A[,c("Sepal.Length","Sepal.Width","Petal.Length","Petal.Width")]
+
+plot_correlation(B, title="Correlation Matrix")
+```
+
+*Answer the following: What is the correlation coefficient between Petal Length and Petal Width?* 0.96
+
+*How does this compare with the correlation coefficient of Sepal Length and Sepal Width?* 0.96 shows strong positive linear correlation between Petal Length and Petal Width. However -0.12 between sepal length and width is very low negative correlation.
+
+
+**Step 3 - Create three separate correlation matrices for each species of iris flower (20 points)**
+
+```{r step3, echo=TRUE}
+Setosa <- A[A$Species == 'setosa',c("Sepal.Length","Sepal.Width","Petal.Length","Petal.Width")]
+plot_correlation(Setosa, title = "Correlation Matrix for Setosa")
+
+Versicolor <- A[A$Species == 'versicolor',c("Sepal.Length","Sepal.Width","Petal.Length","Petal.Width")]
+plot_correlation(Versicolor, title = "Correlation Matrix for Versicolor")
+Virginica <- A[A$Species == 'virginica',c("Sepal.Length","Sepal.Width","Petal.Length","Petal.Width")]
+plot_correlation(Virginica, title = "Correlation Matrix for Virginica")
+```
+*Answer the following: Are the correlation coefficients similar or different when comparing Sepal length*
+*vs. Sepal Width among the three species of Iris flowers?*
+
+Correlations are similar ad every three of them are positive. But Setosa has the stromgest correlation with 0.74.
+
+
+
+**Step 4 - Create a box plot of Petal Length by flower species. Make each box plot a different color for each species (10 points)**
+
+```{r step4, echo=TRUE}
+ggplot(A)+
+  geom_boxplot(aes(x=Species, y=Petal.Length, fill= Species),show.legend = FALSE)+
+  ggtitle("Box Plot of Petal Lenght by Flower Species")+
+  labs(x=NULL,y=NULL)
+```
+
+*Answer the following: What insights can you draw from the box plot you just generated?*
+Stosa has the lowest petal length in general compared to other two folower species. And the data is more densly distributed in Setosa.
+
+**Step 5 - Create a Scatter jitter plot of Petal Width on the x axis vs. Petal Length on y axis, for the species of flower you identify in your boxplot that has the smallest median Petal Length (15 points)**
+
+```{r step5, echo=TRUE}
+ggplot(Setosa)+
+    xlab("Petal Width")+
+    ylab("Petal Length")+
+    ggtitle("Scatter Jitter Plot for Setosa")+
+geom_point(aes(x = Setosa$Petal.Width,y = Setosa$Petal.Length),position = "jitter")
+```
+
+**Step 6 - Now switch this plot to scatter point without the jitter. There appears to be an outlier point on the right of the graph that has Petal Width of 0.6. Can you figure out a way to make this point a different color than the rest? (20 points)**
+
+```{r step6, echo=TRUE}
+ggplot(Setosa)+
+    xlab("Petal Width")+
+    ylab("Petal Length")+
+    ggtitle("Scatterplot for Setosa")+
+geom_point(aes(x = Setosa$Petal.Width,y = Setosa$Petal.Length, color =Setosa$Petal.Width>0.57), show.legend = FALSE)
+```
+
+**Step 7- Finally, create a vertical bar graph that sums observations by flower species after filtering the Iris dataset to only observations with Sepal Length less than 6.** 
+
+**Order your bar graph so that the species with the most records is on the left and the species with the least records is on the right**
+
+**Make each species bar a different color (25 points)**
+
+```{r step7, echo=TRUE}
+C<- A[A$Sepal.Length<6,]
+D<- data.frame(table(C$Species))
+names(D)=c("Species","Count")
+E<-D[order(D$Count, decreasing = TRUE),]
+ggplot(E)+
+    geom_bar(aes(x=reorder(Species, -Count),y=Count),stat="identity", fill = c("Light blue", "grey", "light green"), show.legend = FALSE)+
+             ggtitle("Observations by Flower Species with Sepal Lenght less than 6")+
+    labs(x=NULL,y=NULL)
+```
+
+*Answer the following: What are the count of observations by species in your graph above* Setosa-50
+Versicolor -25
+Virginica - 7
+
+
+
+
+***Before you submit your files, check that each of your ggplots includes a proper TITLE and properly labels the x and y axes*** 
+
+Submit the following two files into the Assignment 3 drop box on Blackboard. Be sure to include your name in the filenames per the examples below.
+File 1: This RMD document with your plots and answers completed above
+Example: **Yoni_Dvorkis_ALY6070_Assignment3.Rmd**
+
+File 2: HTML version of this file after you click "Knit" above
+Example: **Yoni_Dvorkis_ALY6070_Assignment3.html**
+
+
+
+***Academic Integrity Reminder:***
+Collaborating on this assignment with any other student is prohibited and will be considered a violation of your Academic Integrity Agreement that you signed prior to joining the program.
+
+Good luck!
